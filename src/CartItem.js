@@ -9,12 +9,27 @@ class CartItem extends React.Component{
             price:999,
             title: 'Phone',
             qty: 1,
-            img: ''
+            img: '',
+            
         }
     }
 
     increaseQuantity = () => {
-        console.log(this)
+        // this.state.qty +=1;
+        // console.log(this.state.qty);
+        // setState one way
+        // this.setState({
+        //     qty: this.state.qty +1
+        // })
+
+        // setState second way
+        this.setState((prevState) => {
+            return {
+                qty: prevState.qty + 1
+            }
+        })
+
+        
     }
 
     render (){
@@ -33,6 +48,7 @@ class CartItem extends React.Component{
                         <FontAwesomeIcon onClick={this.increaseQuantity} icon={icon({name: 'circle-plus'})} />
                         <FontAwesomeIcon icon={icon({name: 'circle-minus'})} />
                         <FontAwesomeIcon icon={icon({name: 'trash'})} />
+                       
                     </div>
                 </div>
             </div>
