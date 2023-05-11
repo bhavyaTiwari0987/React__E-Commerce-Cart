@@ -12,6 +12,9 @@ class CartItem extends React.Component{
             img: '',
             
         }
+        this.testing()
+       
+
     }
 
     increaseQuantity = () => {
@@ -22,14 +25,41 @@ class CartItem extends React.Component{
         //     qty: this.state.qty +1
         // })
 
-        // setState second way
+        // setState second way (If previous state required so use this way)
         this.setState((prevState) => {
             return {
                 qty: prevState.qty + 1
             }
         })
+    }
+    testing (){
+        const promise = new Promise((resolve, reject) => {
+            setTimeout(()=> {
+                resolve('done');
+            } , 5000);
+        })
 
-        
+        promise.then(() => {
+            this.setState({qty: this.state.qty + 10});
+            this.setState({qty: this.state.qty + 10});
+            this.setState({qty: this.state.qty + 10});
+            console.log('state' , this.state);
+
+        })
+
+
+    }
+
+    decreaseQunatity = ()=> {
+        const {qty} = this.state;
+        if(qty === 0 ){
+            return;
+        }
+        this.setState((prevState) => {
+            return {
+                qty: prevState.qty-1
+            }
+         } )
     }
 
     render (){
@@ -46,7 +76,7 @@ class CartItem extends React.Component{
                     <div className="cart-item-actions">
                         {/* Buttons*/}
                         <FontAwesomeIcon onClick={this.increaseQuantity} icon={icon({name: 'circle-plus'})} />
-                        <FontAwesomeIcon icon={icon({name: 'circle-minus'})} />
+                        <FontAwesomeIcon onClick={this.decreaseQunatity}  icon={icon({name: 'circle-minus'})} />
                         <FontAwesomeIcon icon={icon({name: 'trash'})} />
                        
                     </div>
