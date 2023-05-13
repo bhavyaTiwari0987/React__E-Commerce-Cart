@@ -38,6 +38,9 @@ class App extends React.Component {
 
       firestore()
       .collection('products')
+      // .where('price' , '>=' , 700)
+      // .where('title' , '==' , 'Watch')
+      // .orderBy('price', 'desc')
       .onSnapshot((snapshot) => {
         console.log(snapshot);
 
@@ -62,11 +65,24 @@ class App extends React.Component {
     const {products} = this.state;
     const index = products.indexOf(product);
 
-    products[index].qty +=1;
+    // products[index].qty +=1;
 
-    this.setState({
-        products
-    })
+    // this.setState({
+    //     products
+    // })
+
+    const docRef = firestore().collection('products').doc(products[index].id);
+
+    docRef 
+      .update({
+        qty: products[index].qty + 1
+      })
+      .then(() => {
+        console.log('document updated successfully');
+      })
+      .catch((err) => {
+        console.log('Error:' , err);
+      })
   }
   handleDecreaseQuantity = (product) => {
     const {products} = this.state;
@@ -74,21 +90,46 @@ class App extends React.Component {
     if(products[index].qty === 0){
         return;
     }
-    products[index].qty -= 1;
-    this.setState({
-        products: products,
-    })
+    // products[index].qty -= 1;
+    // this.setState({
+    //     products: products,
+    // })
+    
+    const docRef = firestore().collection('products').doc(products[index].id);
+
+    docRef
+      .update({
+        qty: products[index].qty -1
+      })
+      .then(() => {
+        console.log('document update successfully');
+      })
+      .catch((err) => {
+        console.log('Error:' , err);
+      })
     
   }
 
   handleDeleteProduct = (id) => {
     console.log('in the ondelete function');
     const {products} = this.state;
-    const items = products.filter((item) => item.id !== id);
+    // const items = products.filter((item) => item.id !== id);
 
-    this.setState({
-        products: items
-    })
+    // this.setState({
+    //     products: items
+    // })
+    const docRef = firestore().collection('products').doc(id);
+
+    docRef
+      .delete()
+      .then(() => {
+        console.log('Deleted successfully');
+      })
+      .catch((err) => {
+        console.log('Error:' , err);
+      })
+
+
   }
 
   getCartCount= () => {
@@ -132,7 +173,7 @@ class App extends React.Component {
         <NavBar
           count = {this.getCartCount()}
         />
-        <button style = {{padding: 15, fontSize: 15}} onClick= {this.addProduct}>Add a Product</button>
+        {/* <button style = {{padding: 15, fontSize: 15}} onClick= {this.addProduct}>Add a Product</button> */}
         <Cart 
            products = {products}
            onIncreaseQuantity = {this.handleIncreaseQuantity}
