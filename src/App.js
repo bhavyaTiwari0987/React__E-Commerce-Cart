@@ -2,35 +2,59 @@ import React from "react";
 import CartItem from "./CartItem";
 import Cart from './cart';
 import NavBar from './NavBar';
+import {firestore} from './firebase';
 
 class App extends React.Component {
   constructor(){
     super();
     this.state= {
-      products: [
-        {
-          price: 999,
-          title: "Watch",
-          qty: 1,
-          img: "https://images.unsplash.com/photo-1524805444758-089113d48a6d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8d2F0Y2h8ZW58MHx8MHx8&auto=format&fit=crop&w=600&q=60",
-          id: 1,
-        },
-        {
-          price: 700,
-          title: "Mobile Phone",
-          qty: 10,
-          img: "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8bW9iaWxlfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=600&q=60",
-          id: 2,
-        },
-        {
-          price: 378,
-          title: "Laptop",
-          qty: 4,
-          img: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bGFwdG9wfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=600&q=60",
-          id: 3,
-        },
-      ],
+      products: [],
+      loading: true
     }
+    
+  }
+
+  componentDidMount(){
+      // firestore()
+      // .collection('products')
+      // .get()
+      // .then((snapshot) => {
+      //   console.log(snapshot);
+
+      //   snapshot.docs.map((doc) => {
+      //     console.log(doc.data());
+      //   });
+
+      //   const products = snapshot.docs.map((doc) => {
+      //     const data = doc.data();
+      //     data['id']= doc.id;
+      //     return data;
+      //   })
+      //   this.setState({
+      //     products,
+      //     loading: false
+      //   })
+      // })
+
+      firestore()
+      .collection('products')
+      .onSnapshot((snapshot) => {
+        console.log(snapshot);
+
+        snapshot.docs.map((doc) => {
+          console.log(doc.data());
+        });
+
+        const products = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          data['id']= doc.id;
+          return data;
+        })
+        this.setState({
+          products,
+          loading: false
+        })
+      })
   }
 
   handleIncreaseQuantity = (product) => {
@@ -52,7 +76,7 @@ class App extends React.Component {
     }
     products[index].qty -= 1;
     this.setState({
-        products
+        products: products,
     })
     
   }
@@ -84,19 +108,38 @@ class App extends React.Component {
     return cartTotal;
   }
 
+  addProduct = () => {
+   firestore()
+    .collection('products')
+    .add({
+      img: '',
+      price: 900,
+      qty: 5,
+      title: 'Washing Maching'
+    })
+    .then ((docRef) => {
+      console.log('product has been added!',docRef);
+    })
+    .catch((err) => {
+      console.log('Error: ' , err);
+    })
+  }
+
   render (){
-    const {products} = this.state;
+    const {products , loading} = this.state;
     return (
       <div className="App">
         <NavBar
           count = {this.getCartCount()}
         />
+        <button style = {{padding: 15, fontSize: 15}} onClick= {this.addProduct}>Add a Product</button>
         <Cart 
            products = {products}
            onIncreaseQuantity = {this.handleIncreaseQuantity}
            onDecreaseQuantity = {this.handleDecreaseQuantity}
-           onDeleteProduct = {this. handleDeleteProduct}
+           onDeleteProduct = {this. handleDeleteProduct}          
         />
+        {loading && <h1>Loading Products...</h1>}
         <div style={{fontSize: 20 , padding: 5}}>TOTAL: {this.getCartTotal()}</div>
       </div>
     );
